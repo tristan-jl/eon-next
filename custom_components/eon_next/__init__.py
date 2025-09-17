@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-
 import logging
+
 from .eonnext import EonNext
 
 _LOGGER = logging.getLogger(__name__)
@@ -15,17 +15,20 @@ async def async_setup_entry(hass, entry):
     hass.data.setdefault(DOMAIN, {})
 
     api = EonNext()
-    success = await api.login_with_username_and_password(entry.data[CONF_EMAIL], entry.data[CONF_PASSWORD])
+    success = await api.login_with_username_and_password(
+        entry.data[CONF_EMAIL], entry.data[CONF_PASSWORD]
+    )
 
-    if success == True:
+    if success:
 
         hass.data[DOMAIN][entry.entry_id] = api
 
         hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, "sensor")
+            hass.config_entries.async_forward_entry_setups(entry, "sensor")
         )
 
         return True
-    
+
     else:
         return False
+
